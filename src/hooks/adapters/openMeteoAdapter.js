@@ -1,5 +1,8 @@
 // src/hooks/adapters/openMeteoAdapter.js
 
+// ✅ THÊM IMPORT NÀY
+import { BACKEND_BASE_URL, API_SOURCES } from "../../constants/index";
+
 // === Map mã thời tiết WMO (OpenMeteo) sang cấu trúc OpenWeatherMap/Frontend ===
 const weatherCodeMap = {
   0: { description: "Trời quang", icon: "01d", main: "Clear" },
@@ -39,7 +42,7 @@ function transformWeatherData(apiResult) {
   // --- 1. CURRENT ---
   const transformedCurrent = {
     name: locationName.split(",").pop().trim(),
-    coord: { lat: lat, lon: lon }, // 💡 Lấy lat/lon từ BE
+    coord: { lat: lat, lon: lon },
     main: {
       temp: apiCurrent.temperature,
       feels_like: apiCurrent.feelsLike,
@@ -56,13 +59,12 @@ function transformWeatherData(apiResult) {
     ],
   };
 
-  // --- 2. HOURLY --- (Cần khớp với structure của fakeData.hourly)
+  // --- 2. HOURLY ---
   const transformedHourly = apiHourly.slice(0, 12).map((item) => {
     const isDayTime = item.isDay === "Day";
     const iconSuffix = isDayTime ? "d" : "n";
     const dayCode = weatherCodeMap[item.weatherCode] || weatherCodeMap.default;
 
-    // Giả định rain data: nếu có rainChance > 50%
     const rainAmount =
       item.rainChance > 50 ? Number((Math.random() * 8).toFixed(1)) : undefined;
 
@@ -72,16 +74,15 @@ function transformWeatherData(apiResult) {
       weather: [
         {
           description: dayCode.description,
-          icon: dayCode.icon, // Sử dụng icon OpenWeatherMap-like
+          icon: dayCode.icon,
           main: dayCode.main,
         },
       ],
-      // Thêm thông tin mưa theo cấu trúc cũ của bạn
       rain: rainAmount ? { "1h": rainAmount } : undefined,
     };
   });
 
-  // --- 3. DAILY --- (Cần khớp với structure của fakeData.daily)
+  // --- 3. DAILY ---
   const dailyList = apiDaily.slice(0, 7).map((item) => {
     const dayCode = weatherCodeMap[item.weatherCode] || weatherCodeMap.default;
 
@@ -103,7 +104,6 @@ function transformWeatherData(apiResult) {
     };
   });
 
-  // Lưu ý: daily cần phải là object { list: [...] }
   const transformedDaily = { list: dailyList };
 
   return {
@@ -116,11 +116,9 @@ function transformWeatherData(apiResult) {
 
 /**
  * Hàm chính để gọi API Spring Boot và trả về dữ liệu đã chuyển đổi (Adapter).
- * Backend sẽ nhận tên địa điểm, tự tìm lat/lon và gọi API thời tiết.
  */
 export async function fetchFromSpringBootOpenMeteo(locationAddress) {
   const encodedLocation = encodeURIComponent(locationAddress);
-  // URL chỉ truyền tên địa điểm (location)
   const API_ENDPOINT = `${BACKEND_BASE_URL}/weather?location=${encodedLocation}&source=${API_SOURCES.SPRING_BOOT_OPENMETEO}`;
 
   const response = await fetch(API_ENDPOINT);
