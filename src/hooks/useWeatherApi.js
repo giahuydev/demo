@@ -1,7 +1,7 @@
 // src/hooks/useWeatherApi.js
 
 import { useState, useEffect } from "react";
-import { API_SOURCES } from "../constants"; // Import từ constants/index.js
+import { API_SOURCES } from "../constants/index"; // Import từ constants/index.js
 import { fetchFromSpringBootOpenMeteo } from "./adapters/openMeteoAdapter"; // Import Adapter
 
 // Map nguồn API đến hàm gọi tương ứng (Adapter)
