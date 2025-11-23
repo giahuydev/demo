@@ -8,8 +8,6 @@ import WeatherChart from "../components/WeatherChart";
 import useWeatherApi from "../hooks/useWeatherApi";
 import { API_SOURCES } from "../constants";
 
-// XÓA DỮ LIỆU GIẢ CŨ (fakeData)
-
 export default function WeatherPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -54,7 +52,7 @@ export default function WeatherPage() {
   const locationName = weatherData.name || currentCity;
   const description = weatherData.weather?.[0]?.description || "Đang tải...";
 
-  // --- HIỂN THỊ TRẠNG THÁI LOADING/ERROR ---
+  // --- HIỂN THỊ TRẠNG THÁI LOADING (VẪN GIỮ LẠI) ---
   if (loading && !current) {
     // Hiển thị loading chỉ khi chưa có dữ liệu lần nào
     return (
@@ -69,27 +67,7 @@ export default function WeatherPage() {
     );
   }
 
-  if (error && !current) {
-    // Hiển thị error chỉ khi không có dữ liệu để hiển thị
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative max-w-lg mx-auto"
-          role="alert"
-        >
-          <strong className="font-bold">Lỗi tải dữ liệu!</strong>
-          <p className="block sm:inline mt-2">
-            Không thể lấy dữ liệu: **{error}**
-          </p>
-          <p className="mt-1 text-sm">
-            Vui lòng kiểm tra tên thành phố, hoặc đảm bảo Backend đang chạy tại
-            `http://localhost:8080`.
-          </p>
-        </div>
-      </div>
-    );
-  }
-  // ----------------------------------------
+  // --- ĐÃ XÓA KHỐI IF (error && !current) DÀI Ở ĐÂY ---
 
   return (
     <>
@@ -163,6 +141,27 @@ export default function WeatherPage() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* ⚠️ THẺ THÔNG BÁO LỖI (ALERT BANNER) ĐƯỢC THÊM VÀO ĐÂY */}
+          {error && (
+            <div className="mb-6 max-w-2xl mx-auto">
+              <div
+                className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+                role="alert"
+              >
+                <strong className="font-bold">⚠️ Lỗi Kết Nối Dữ Liệu!</strong>
+                <p className="block sm:inline ml-2">
+                  Không thể tải dữ liệu mới: **{error}**. Dữ liệu đang hiển thị
+                  là giá trị mặc định.
+                </p>
+                <p className="text-sm mt-1">
+                  Kiểm tra trạng thái Backend Spring Boot
+                  (`http://localhost:8080`) và cấu hình CORS.
+                </p>
+              </div>
+            </div>
+          )}
+          {/* END ALERT BANNER */}
+
           {/* Search Bar */}
           <div className="mb-8">
             <div className="relative max-w-2xl mx-auto">

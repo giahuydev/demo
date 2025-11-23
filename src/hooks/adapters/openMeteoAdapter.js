@@ -121,7 +121,7 @@ function transformWeatherData(apiResult) {
 export async function fetchFromSpringBootOpenMeteo(locationAddress) {
   const encodedLocation = encodeURIComponent(locationAddress);
   // URL chỉ truyền tên địa điểm (location)
-  const API_ENDPOINT = `http://localhost:8080/identity/weather?location=${encodedLocation}&source=OpenMeteo`;
+  const API_ENDPOINT = `${BACKEND_BASE_URL}/weather?location=${encodedLocation}&source=${API_SOURCES.SPRING_BOOT_OPENMETEO}`;
 
   const response = await fetch(API_ENDPOINT);
   if (!response.ok) {
