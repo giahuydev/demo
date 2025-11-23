@@ -8,8 +8,6 @@ export default defineConfig({
       "/identity": {
         target: "http://localhost:8080", // URL của Spring Boot
         changeOrigin: true,
-        // Nếu Spring Boot không có prefix /identity, bỏ comment dòng này:
-        // rewrite: (path) => path.replace(/^\/identity/, '')
       },
     },
   },

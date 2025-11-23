@@ -7,9 +7,10 @@ export default function RegisterModal({ onClose, onSwitchToLogin }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
       onClick={onClose}
     >
+      {/* ↑ ĐÃ SỬA: z-50 → z-[9999] */}
       <div
         className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md relative border border-gray-200 dark:border-gray-700"
         onClick={(e) => e.stopPropagation()}
