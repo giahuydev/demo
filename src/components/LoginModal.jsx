@@ -1,5 +1,10 @@
 // src/components/LoginModal.jsx
 export default function LoginModal({ onClose, onSwitchToRegister }) {
+  const handleGoogleLogin = () => {
+    // TODO: Thêm logic đăng nhập Google (Firebase, NextAuth, v.v.)
+    console.log("Google login clicked");
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -21,6 +26,7 @@ export default function LoginModal({ onClose, onSwitchToRegister }) {
         </h2>
 
         <form className="space-y-4">
+          {/* Email + Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Email
@@ -48,6 +54,22 @@ export default function LoginModal({ onClose, onSwitchToRegister }) {
             className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition"
           >
             Đăng nhập
+          </button>
+
+          {/* Nút Google */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full py-3 mt-2 flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          >
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+              className="w-5 h-5"
+            />
+            <span className="text-gray-700 dark:text-gray-300">
+              Đăng nhập với Google
+            </span>
           </button>
 
           <p className="text-center text-gray-600 dark:text-gray-400">
