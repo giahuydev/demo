@@ -1,53 +1,65 @@
-import { useState } from "react";
+// src/hooks/useWeatherApi.js
 
-// DỮ LIỆU GIẢ HOÀN HẢO – ĐÃ TEST 100% HIỆN ĐẸP NHƯ ẢNH CŨ
-const fakeCurrent = {
-  name: "Thành phố Hồ Chí Minh",
-  coord: { lat: 10.7626, lon: 106.6822 },
-  main: { temp: 31, feels_like: 36, humidity: 74 },
-  wind: { speed: 3.5 },
-  clouds: { all: 40 },
-  weather: [{ description: "mây rải rác", icon: "02d", main: "Clouds" }],
+import { useState, useEffect } from "react";
+import { API_SOURCES } from "../constants"; // Import từ constants/index.js
+import { fetchFromSpringBootOpenMeteo } from "./adapters/openMeteoAdapter"; // Import Adapter
+
+// Map nguồn API đến hàm gọi tương ứng (Adapter)
+const API_ADAPTERS = {
+  [API_SOURCES.SPRING_BOOT_OPENMETEO]: fetchFromSpringBootOpenMeteo,
+  // Thêm các nguồn khác (nếu có)
 };
 
-const fakeHourly = Array.from({ length: 8 }, (_, i) => {
-  const hour = new Date().getHours() + i;
-  return {
-    dt: Math.floor(Date.now() / 1000) + i * 3600,
-    main: { temp: 30 + Math.random() * 4 },
-    weather: [
-      {
-        description: ["mây rải rác", "mưa nhẹ", "nắng", "nhiều mây"][i % 4],
-        icon: i % 3 === 0 ? "09d" : i % 2 === 0 ? "01d" : "04d",
-      },
-    ],
-  };
-});
+export default function useWeatherApi(
+  locationAddress = "Thành phố Hồ Chí Minh",
+  source = API_SOURCES.SPRING_BOOT_OPENMETEO
+) {
+  // Dữ liệu ban đầu là null/empty array, sẽ được set khi gọi API thành công
+  const [current, setCurrent] = useState(null);
+  const [hourly, setHourly] = useState([]);
+  const [daily, setDaily] = useState({ list: [] });
+  const [location, setLocation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-const fakeDaily = Array.from({ length: 5 }, (_, i) => ({
-  dt: Math.floor(Date.now() / 1000) + (i + 1) * 86400,
-  dt_txt: new Date(Date.now() + (i + 1) * 86400)
-    .toISOString()
-    .replace("T", " ")
-    .substring(0, 19),
-  main: { temp: 29 + i + Math.random() * 3 },
-  weather: [
-    {
-      description: ["nắng đẹp", "mưa rào", "mưa lớn", "mây đen", "trời quang"][
-        i
-      ],
-      icon: "10d",
-    },
-  ],
-}));
+  useEffect(() => {
+    if (!locationAddress || !API_ADAPTERS[source]) {
+      setLoading(false);
+      setError("Nguồn API không hợp lệ hoặc thiếu địa chỉ.");
+      return;
+    }
 
-// Trả về đúng cấu trúc mà các component cần
-export default function useWeatherApi() {
-  const [current] = useState(fakeCurrent);
-  const [hourly] = useState(fakeHourly);
-  const [daily] = useState({ list: fakeDaily }); // ← QUAN TRỌNG: phải có .list
-  const [location] = useState(fakeCurrent.coord);
-  const [loading] = useState(false);
+    const selectedFetcher = API_ADAPTERS[source];
 
-  return { current, hourly, daily, location, loading, error: null };
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Gọi Adapter đã chọn, truyền tên địa điểm
+        const transformedData = await selectedFetcher(locationAddress);
+
+        setCurrent(transformedData.current);
+        setHourly(transformedData.hourly);
+        setDaily(transformedData.daily);
+        setLocation(transformedData.location);
+      } catch (err) {
+        console.error(`Lỗi từ nguồn ${source}:`, err);
+        // Hiển thị lỗi rõ ràng hơn
+        setError(
+          `Lỗi khi tải dữ liệu cho "${locationAddress}": ${err.message}`
+        );
+        setCurrent(null);
+        setHourly([]);
+        setDaily({ list: [] });
+        setLocation(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [locationAddress, source]); // Re-run khi địa chỉ hoặc nguồn thay đổi
+
+  return { current, hourly, daily, location, loading, error };
 }
