@@ -38,7 +38,10 @@ export default function useWeatherApi(
       try {
         // Gọi Adapter đã chọn, truyền tên địa điểm
         const transformedData = await selectedFetcher(locationAddress);
-
+        console.log("✅ Transformed Data:", transformedData);
+console.log("📍 Location:", transformedData.location);
+console.log("📅 Daily:", transformedData.daily);
+console.log("📅 Daily List Length:", transformedData.daily?.list?.length);
         setCurrent(transformedData.current);
         setHourly(transformedData.hourly);
         setDaily(transformedData.daily);

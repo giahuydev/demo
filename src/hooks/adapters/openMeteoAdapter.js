@@ -35,9 +35,11 @@ function transformWeatherData(apiResult) {
     hourly: apiHourly,
     daily: apiDaily,
     locationName,
-    lat,
-    lon,
   } = data;
+
+  // ✅ FIX: Lấy lat/lon từ current (BE trả về trong current)
+  const lat = apiCurrent.latitude;
+  const lon = apiCurrent.longitude;
 
   // --- 1. CURRENT ---
   const transformedCurrent = {
@@ -106,11 +108,19 @@ function transformWeatherData(apiResult) {
 
   const transformedDaily = { list: dailyList };
 
+  // ✅ Debug: Log dữ liệu trước khi return
+  console.log("🔍 Transform Debug:", {
+    lat,
+    lon,
+    coord: transformedCurrent.coord,
+    dailyListLength: transformedDaily.list.length
+  });
+
   return {
     current: transformedCurrent,
     hourly: transformedHourly,
     daily: transformedDaily,
-    location: transformedCurrent.coord,
+    location: { lat, lon }, // ✅ FIX: Dùng lat/lon trực tiếp từ API
   };
 }
 

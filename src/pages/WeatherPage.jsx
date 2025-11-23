@@ -1,10 +1,10 @@
 // src/pages/WeatherPage.jsx
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import LoginModal from "../components/LoginModal";
 import RegisterModal from "../components/RegisterModal";
 import WeatherChart from "../components/WeatherChart";
-// 💡 IMPORT HOOK VÀ CONSTANTS
+import MapSelector from "../components/MapSelector"; // ✅ THÊM IMPORT
 import useWeatherApi from "../hooks/useWeatherApi";
 import { API_SOURCES } from "../constants";
 
@@ -14,16 +14,45 @@ export default function WeatherPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentCity, setCurrentCity] = useState("Thành phố Hồ Chí Minh"); // Vị trí đang được hiển thị
-
-  // State để chọn nguồn API
+  const [currentCity, setCurrentCity] = useState("Thành phố Hồ Chí Minh");
   const [apiSource, setApiSource] = useState(API_SOURCES.SPRING_BOOT_OPENMETEO);
 
-  // === GỌI HOOK DỮ LIỆU THỰC TẾ ===
-  const { current, hourly, daily, loading, error } = useWeatherApi(
+  // ✅ THÊM location VÀO DESTRUCTURING
+  const { current, hourly, daily, location, loading, error } = useWeatherApi(
     currentCity,
     apiSource
   );
+  // Thêm hàm này vào trong component WeatherPage, sau phần useWeatherApi
+const handleMapLocationSelect = async (coords) => {
+  console.log("📍 User clicked at:", coords);
+  
+  try {
+    // Gọi API Reverse Geocoding để lấy tên địa điểm từ tọa độ
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lon}&accept-language=vi`
+    );
+    const data = await response.json();
+    
+    // Lấy tên thành phố
+    const cityName = 
+      data.address?.city || 
+      data.address?.town || 
+      data.address?.county || 
+      data.address?.state ||
+      data.display_name.split(',')[0];
+    
+    console.log("🏙️ City found:", cityName);
+    
+    // Cập nhật địa điểm hiện tại
+    setCurrentCity(cityName);
+  } catch (error) {
+    console.error("❌ Error:", error);
+    alert("Không thể lấy tên địa điểm. Vui lòng thử lại!");
+  }
+};
+
+  // ✅ DEBUG
+  console.log("🗺️ Location from useWeatherApi:", location);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -33,7 +62,6 @@ export default function WeatherPage() {
     }
   }, [isDarkMode]);
 
-  // Xử lý tìm kiếm khi người dùng nhấn Enter
   const handleSearch = (e) => {
     if ((e.key === "Enter" || e.type === "click") && searchQuery.trim()) {
       setCurrentCity(searchQuery.trim());
@@ -41,33 +69,25 @@ export default function WeatherPage() {
     }
   };
 
-  // Lọc dữ liệu hàng giờ và hàng ngày để sử dụng
-  // Đảm bảo daily.list là mảng và giới hạn 7 ngày
   const forecast7Day = daily?.list?.slice(0, 7) || [];
-  const forecastHourly = hourly?.slice(0, 12) || []; // Giới hạn 12 giờ
-
-  // Dùng `current` hoặc object rỗng để tránh lỗi truy cập thuộc tính khi loading/error
+  const forecastHourly = hourly?.slice(0, 12) || [];
   const weatherData = current || {};
   const currentTemp = Math.round(weatherData.main?.temp) || "-";
   const locationName = weatherData.name || currentCity;
   const description = weatherData.weather?.[0]?.description || "Đang tải...";
 
-  // --- HIỂN THỊ TRẠNG THÁI LOADING (VẪN GIỮ LẠI) ---
   if (loading && !current) {
-    // Hiển thị loading chỉ khi chưa có dữ liệu lần nào
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <div className="text-center text-gray-700 dark:text-gray-300">
           <span className="text-4xl animate-pulse">☁️</span>
           <p className="mt-4 text-lg">
-            Đang tải dữ liệu thời tiết cho **{currentCity}**...
+            Đang tải dữ liệu thời tiết cho {currentCity}...
           </p>
         </div>
       </div>
     );
   }
-
-  // --- ĐÃ XÓA KHỐI IF (error && !current) DÀI Ở ĐÂY ---
 
   return (
     <>
@@ -77,7 +97,6 @@ export default function WeatherPage() {
       />
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        {/* Header */}
         <header className="sticky top-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 z-30 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
@@ -96,7 +115,6 @@ export default function WeatherPage() {
               </div>
 
               <nav className="hidden md:flex items-center space-x-2">
-                {/* Thêm phần chọn nguồn API */}
                 <select
                   value={apiSource}
                   onChange={(e) => setApiSource(e.target.value)}
@@ -139,9 +157,7 @@ export default function WeatherPage() {
           </div>
         </header>
 
-        {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* ⚠️ THẺ THÔNG BÁO LỖI (ALERT BANNER) ĐƯỢC THÊM VÀO ĐÂY */}
           {error && (
             <div className="mb-6 max-w-2xl mx-auto">
               <div
@@ -150,19 +166,17 @@ export default function WeatherPage() {
               >
                 <strong className="font-bold">⚠️ Lỗi Kết Nối Dữ Liệu!</strong>
                 <p className="block sm:inline ml-2">
-                  Không thể tải dữ liệu mới: **{error}**. Dữ liệu đang hiển thị
+                  Không thể tải dữ liệu mới: {error}. Dữ liệu đang hiển thị
                   là giá trị mặc định.
                 </p>
                 <p className="text-sm mt-1">
                   Kiểm tra trạng thái Backend Spring Boot
-                  (`http://localhost:8080`) và cấu hình CORS.
+                  (http://localhost:8080) và cấu hình CORS.
                 </p>
               </div>
             </div>
           )}
-          {/* END ALERT BANNER */}
 
-          {/* Search Bar */}
           <div className="mb-8">
             <div className="relative max-w-2xl mx-auto">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl">
@@ -179,16 +193,13 @@ export default function WeatherPage() {
             </div>
           </div>
 
-          {/* Weather Card & Map Grid */}
           <div className="grid lg:grid-cols-2 gap-6 mb-8">
-            {/* Current Weather Card */}
             <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-8 text-white shadow-lg">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold mb-1">{locationName}</h2>
                   <p className="text-blue-100">{description}</p>
                 </div>
-                {/* HIỂN THỊ ICON THỰC TẾ DÙNG OpenWeatherMap ICON URL */}
                 <span className="text-5xl">
                   {weatherData.weather?.[0]?.icon ? (
                     <img
@@ -205,7 +216,6 @@ export default function WeatherPage() {
               <div className="text-6xl font-bold mb-8">{currentTemp}°C</div>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Gió */}
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white/20 rounded-lg">
                     <span className="text-xl">💨</span>
@@ -219,7 +229,6 @@ export default function WeatherPage() {
                     </p>
                   </div>
                 </div>
-                {/* Độ ẩm */}
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white/20 rounded-lg">
                     <span className="text-xl">💧</span>
@@ -233,7 +242,6 @@ export default function WeatherPage() {
                     </p>
                   </div>
                 </div>
-                {/* Cảm giác */}
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white/20 rounded-lg">
                     <span className="text-xl">👁️</span>
@@ -247,7 +255,6 @@ export default function WeatherPage() {
                     </p>
                   </div>
                 </div>
-                {/* Mây */}
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white/20 rounded-lg">
                     <span className="text-xl">☁️</span>
@@ -264,30 +271,12 @@ export default function WeatherPage() {
               </div>
             </div>
 
-            {/* Map Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
-              <div className="aspect-video bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🗺️</div>
-                  <p className="text-gray-600 dark:text-gray-400 font-medium">
-                    Bản đồ thời tiết
-                  </p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    📍{" "}
-                    {weatherData.coord?.lat
-                      ? `${weatherData.coord.lat.toFixed(4)}°`
-                      : "-"}
-                    ,{" "}
-                    {weatherData.coord?.lon
-                      ? `${weatherData.coord.lon.toFixed(4)}°`
-                      : "-"}
-                  </p>
-                </div>
-              </div>
+            {/* ✅ SỬA PHẦN NÀY - THAY THẾ DIV TĨNH BẰNG MapSelector */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700" style={{ height: "400px" }}>
+              <MapSelector position={location} />
             </div>
           </div>
 
-          {/* Hourly Forecast */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 mb-8">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
               ⏰ Dự báo {forecastHourly.length} giờ tới
@@ -299,8 +288,8 @@ export default function WeatherPage() {
                   const temp = Math.round(hour.main?.temp) || "-";
                   const descriptionHourly =
                     hour.weather?.[0]?.description || "N/A";
-                  const icon = hour.weather?.[0]?.icon || "04d"; // Icon mặc định
-                  const rainVolume = hour.rain?.["1h"]; // Lấy lượng mưa
+                  const icon = hour.weather?.[0]?.icon || "04d";
+                  const rainVolume = hour.rain?.["1h"];
 
                   return (
                     <div
@@ -320,7 +309,6 @@ export default function WeatherPage() {
                       <p className="text-lg font-bold text-gray-900 dark:text-white">
                         {temp}°
                       </p>
-                      {/* Thêm lượng mưa nếu có */}
                       {rainVolume && (
                         <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs text-blue-500 font-semibold bg-blue-100 dark:bg-blue-900 rounded-full px-1.5">
                           {rainVolume}mm
@@ -333,16 +321,13 @@ export default function WeatherPage() {
             </div>
           </div>
 
-          {/* Weather Chart - BIỂU ĐỒ */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 mb-8">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
               📊 Biểu đồ thời tiết chi tiết
             </h3>
-            {/* Truyền dữ liệu giờ thực tế */}
             <WeatherChart data={forecastHourly} />
           </div>
 
-          {/* 7-day Forecast */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
               📅 Dự báo {forecast7Day.length} ngày tới
@@ -397,7 +382,6 @@ export default function WeatherPage() {
         </main>
       </div>
 
-      {/* Modals */}
       {isLoginOpen && (
         <LoginModal
           onClose={() => setIsLoginOpen(false)}
