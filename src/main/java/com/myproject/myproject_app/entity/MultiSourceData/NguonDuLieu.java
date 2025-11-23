@@ -20,6 +20,8 @@ public class NguonDuLieu {
     private String tenNguon; // UK
     private String quocGia;
     private String moTa;
+
+    @Column(columnDefinition = "TEXT")
     private String urlApi;
     private Float doChinhXacTrungBinh;
     private Integer tongLuotDanhGia;
