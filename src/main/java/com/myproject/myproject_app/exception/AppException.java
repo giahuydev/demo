@@ -1,11 +1,15 @@
 package com.myproject.myproject_app.exception;
 
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
-public class AppException extends RuntimeException{
+@Setter
+public class AppException extends RuntimeException {
     private ErrorCode errorCode;
+
+    public AppException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+    }
 }

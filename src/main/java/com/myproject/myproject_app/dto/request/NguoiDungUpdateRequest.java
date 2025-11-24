@@ -10,8 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NguoiDungUpdateRequest {
 
-    private String matKhau;
-    private String hoTen;
-    private String avatarUrl;
-    private String cheDoGiaoDien;
+    String matKhau;
+    String hoTen;
+    String avatarUrl;
+    String cheDoGiaoDien;
+    String tenNguonMacDinh;
 }

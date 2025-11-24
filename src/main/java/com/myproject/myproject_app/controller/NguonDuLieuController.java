@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/NguonDuLieu") // Endpoint gốc
+@RequestMapping("/SoureWeather")
 @RequiredArgsConstructor
 public class NguonDuLieuController {
 

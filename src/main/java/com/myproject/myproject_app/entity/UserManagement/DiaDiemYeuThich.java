@@ -30,6 +30,7 @@ public class DiaDiemYeuThich {
     private String bietDanh;
     private Float viDo;
     private Float kinhDo;
+    // chỉnh sửa sau (xóa)
     private Integer thuTuSapXep;
     private LocalDateTime ngayThem;
 }
