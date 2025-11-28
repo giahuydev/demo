@@ -1,22 +1,26 @@
 package com.myproject.myproject_app.mapper;
 
-
 import com.myproject.myproject_app.dto.request.NguonDuLieuRequest;
-import com.myproject.myproject_app.dto.request.NguonDuLieuUpdateRequest;
 import com.myproject.myproject_app.dto.response.NguonDuLieuResponse;
 import com.myproject.myproject_app.entity.MultiSourceData.NguonDuLieu;
-import org.mapstruct.BeanMapping;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {MoHinhDuBaoMapper.class})
 public interface NguonDuLieuMapper {
 
-    NguonDuLieu toNguonDuLieu(NguonDuLieuRequest request);
+    NguonDuLieu toEntity(NguonDuLieuRequest request);
 
-        NguonDuLieuResponse toNguonDuLieuResponse(NguonDuLieu nguonDuLieu);
+    NguonDuLieuResponse toResponse(NguonDuLieu entity);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateNguonDuLieu(@MappingTarget NguonDuLieu nguonDuLieu, NguonDuLieuUpdateRequest request);
+    void updateEntityFromRequest(@MappingTarget NguonDuLieu entity, NguonDuLieuRequest request);
+
+
+    @AfterMapping
+    default void linkParent(@MappingTarget NguonDuLieu entity) {
+        if (entity.getDanhSachModel() != null) {
+            entity.getDanhSachModel().forEach(child -> child.setNguonDuLieu(entity));
+        }
+    }
 }

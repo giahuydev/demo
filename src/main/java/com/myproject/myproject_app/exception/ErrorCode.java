@@ -35,9 +35,16 @@ public enum ErrorCode {
     INVALID_REQUEST(4000, "Dữ liệu đầu vào không hợp lệ", HttpStatus.BAD_REQUEST),
     LOCATION_REQUIRED(4001, "Vui lòng cung cấp tên địa điểm (location)", HttpStatus.BAD_REQUEST),
     ADDRESS_NOT_FOUND(4002, "Không tìm thấy địa chỉ từ tọa độ hoặc tên địa điểm", HttpStatus.NOT_FOUND),
+    INVALID_FORECAST_DAYS(4003, "Số ngày dự báo phải từ 1 đến 16 ngày", HttpStatus.BAD_REQUEST),
+    INVALID_COORDINATES(4004, "Tọa độ không hợp lệ", HttpStatus.BAD_REQUEST),
 
     // --- 5xxx: Lỗi Hệ Thống Bên Ngoài (External API) ---
-    EXTERNAL_API_ERROR(5001, "Lỗi khi gọi API bên ngoài (OpenMeteo/Nominatim...)", HttpStatus.BAD_GATEWAY)
+    EXTERNAL_API_ERROR(5001, "Lỗi khi gọi API bên ngoài (OpenMeteo/Nominatim...)", HttpStatus.BAD_GATEWAY),
+
+    ROUTE_NOT_FOUND(6001, "Không tìm thấy đường đi giữa hai địa điểm này (TrackAsia không trả về kết quả)", HttpStatus.BAD_REQUEST),
+    ROUTING_SERVICE_ERROR(6002, "Lỗi kết nối đến dịch vụ bản đồ", HttpStatus.BAD_GATEWAY),
+    AI_ANALYSIS_FAILED(6003, "Không thể phân tích rủi ro lúc này (Lỗi AI)", HttpStatus.INTERNAL_SERVER_ERROR),
+    TRIP_NOT_FOUND(6004, "Hành trình không tồn tại hoặc link chia sẻ không đúng", HttpStatus.NOT_FOUND),
     ;
 
     private final int code;

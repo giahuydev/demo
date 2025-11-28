@@ -1,76 +1,74 @@
 package com.myproject.myproject_app.service;
 
 import com.myproject.myproject_app.dto.request.NguonDuLieuRequest;
-import com.myproject.myproject_app.dto.request.NguonDuLieuUpdateRequest;
 import com.myproject.myproject_app.dto.response.NguonDuLieuResponse;
 import com.myproject.myproject_app.entity.MultiSourceData.NguonDuLieu;
 import com.myproject.myproject_app.exception.AppException;
 import com.myproject.myproject_app.exception.ErrorCode;
 import com.myproject.myproject_app.mapper.NguonDuLieuMapper;
 import com.myproject.myproject_app.repository.NguonDuLieuRepository;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NguonDuLieuService {
 
-    NguonDuLieuRepository nguonDuLieuRepository;
-    NguonDuLieuMapper nguonDuLieuMapper;
+    private final NguonDuLieuRepository nguonDuLieuRepository;
+    private final NguonDuLieuMapper nguonDuLieuMapper;
 
-    // 1. Tạo mới (Admin)
     @Transactional
-    public NguonDuLieuResponse createNguonDuLieu(NguonDuLieuRequest request) {
-        if (nguonDuLieuRepository.existsBytenNguon(request.getTenNguon())) {
+    public NguonDuLieuResponse create(NguonDuLieuRequest request) {
+        if (nguonDuLieuRepository.findByTenChucNang(request.getTenChucNang()).isPresent()) {
             throw new AppException(ErrorCode.SOURCE_EXISTED);
         }
 
-        NguonDuLieu nguonDuLieu = nguonDuLieuMapper.toNguonDuLieu(request);
+        // Mapper tự xử lý việc map dữ liệu và gán quan hệ cha-con
+        NguonDuLieu entity = nguonDuLieuMapper.toEntity(request);
 
-        nguonDuLieu.setNgayThem(LocalDateTime.now());
-        nguonDuLieu.setKichHoat(true);
-
-        return nguonDuLieuMapper.toNguonDuLieuResponse(nguonDuLieuRepository.save(nguonDuLieu));
+        NguonDuLieu savedEntity = nguonDuLieuRepository.save(entity);
+        return nguonDuLieuMapper.toResponse(savedEntity);
     }
 
-    // 2. Lấy danh sách (User/Admin)
-    public List<NguonDuLieuResponse> getAllNguonDuLieu() {
+    @Transactional
+    public NguonDuLieuResponse update(Integer id, NguonDuLieuRequest request) {
+        NguonDuLieu entity = nguonDuLieuRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
+
+        nguonDuLieuRepository.findByTenChucNang(request.getTenChucNang())
+                .ifPresent(existing -> {
+                    if (!existing.getIdNguon().equals(id)) {
+                        throw new AppException(ErrorCode.SOURCE_EXISTED);
+                    }
+                });
+
+        nguonDuLieuMapper.updateEntityFromRequest(entity, request);
+
+        NguonDuLieu updatedEntity = nguonDuLieuRepository.save(entity);
+        return nguonDuLieuMapper.toResponse(updatedEntity);
+    }
+
+    @Transactional
+    public void delete(Integer id) {
+        if (!nguonDuLieuRepository.existsById(id)) {
+            throw new AppException(ErrorCode.SOURCE_NOT_FOUND);
+        }
+        nguonDuLieuRepository.deleteById(id);
+    }
+
+    public NguonDuLieuResponse getById(Integer id) {
+        NguonDuLieu entity = nguonDuLieuRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
+        return nguonDuLieuMapper.toResponse(entity);
+    }
+
+    public List<NguonDuLieuResponse> getAll() {
         return nguonDuLieuRepository.findAll().stream()
-                .map(nguonDuLieuMapper::toNguonDuLieuResponse)
-                .toList();
-    }
-
-    // 3. Lấy chi tiết theo tên
-    public NguonDuLieuResponse getNguonDuLieuByName(String name) {
-        return nguonDuLieuRepository.findBytenNguon(name)
-                .map(nguonDuLieuMapper::toNguonDuLieuResponse)
-                .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
-    }
-
-    // 4. Cập nhật (Admin)
-    @Transactional
-    public NguonDuLieuResponse updateNguonDuLieu(String name, NguonDuLieuUpdateRequest request) {
-        NguonDuLieu nguonDuLieu = nguonDuLieuRepository.findBytenNguon(name)
-                .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
-
-        nguonDuLieuMapper.updateNguonDuLieu(nguonDuLieu, request);
-
-        return nguonDuLieuMapper.toNguonDuLieuResponse(nguonDuLieuRepository.save(nguonDuLieu));
-    }
-
-    // 5. Xóa (Bổ sung thêm cho đủ bộ CRUD)
-    @Transactional
-    public void deleteNguonDuLieu(String name) {
-        NguonDuLieu nguonDuLieu = nguonDuLieuRepository.findBytenNguon(name)
-                .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
-
-        nguonDuLieuRepository.delete(nguonDuLieu);
+                .map(nguonDuLieuMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

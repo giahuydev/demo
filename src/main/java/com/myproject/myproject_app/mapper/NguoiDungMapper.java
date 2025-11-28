@@ -17,6 +17,6 @@ public interface NguoiDungMapper {
     NguoiDungCreationResponse toNguoiDungResponse(NguoiDung nguoiDung);
 
     @Mapping(target = "nguonMacDinh", ignore = true)
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "vaiTro", ignore = true)
     void updateUser(@MappingTarget NguoiDung nguoiDung, NguoiDungUpdateRequest request);
 }

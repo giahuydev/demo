@@ -34,7 +34,6 @@ public class NguoiDung {
     private String cheDoGiaoDien;
     private boolean nguoiDungTinCay;
 
-    // FK: id_nguon_mac_dinh
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_nguon_mac_dinh")
     private NguonDuLieu nguonMacDinh;

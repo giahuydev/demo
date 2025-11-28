@@ -4,29 +4,26 @@ import com.myproject.myproject_app.entity.UserManagement.NguoiDung;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "like_anh", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"id_anh", "id_nguoi_dung"}) // Đảm bảo 1 user chỉ like 1 ảnh 1 lần
+        @UniqueConstraint(columnNames = {"id_nguoi_dung", "id_anh"})
 })
 @Data
 @NoArgsConstructor
 public class LikeAnh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer idLike;
 
-    // FK: id_anh
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_anh")
-    private AnhCongDong anh;
+    @JoinColumn(name = "id_anh", nullable = false)
+    private AnhCongDong anhCongDong;
 
-    // FK: id_nguoi_dung
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_nguoi_dung")
+    @JoinColumn(name = "id_nguoi_dung", nullable = false)
     private NguoiDung nguoiDung;
 
-    private LocalDateTime thoiGian;
+    private LocalDateTime ngayLike = LocalDateTime.now();
 }

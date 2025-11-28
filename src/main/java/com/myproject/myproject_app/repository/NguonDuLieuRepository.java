@@ -12,5 +12,6 @@ public interface NguonDuLieuRepository extends JpaRepository<NguonDuLieu,Integer
 
     Optional<NguonDuLieu> findBytenNguon(String tenNguon);
 
-    boolean existsBytenNguon(String tenNguon);
+    Optional<NguonDuLieu> findByTenChucNang(String tenChucNang);
+
 }

@@ -1,7 +1,9 @@
 package com.myproject.myproject_app.entity.Email;
 
+import com.myproject.myproject_app.entity.Alert_Feedback.ThongBao;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -10,23 +12,22 @@ import java.time.LocalDateTime;
 @Table(name = "lich_su_gui_email")
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"thongBao"})
 public class LichSuGuiEmail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idEmail;
+    private Integer idLichSuGui;
 
-    // FK: id_dang_ky
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_dang_ky")
-    private DangKyEmail dangKyEmail;
+    @JoinColumn(name = "id_thong_bao")
+    private ThongBao thongBao; // Liên kết với nội dung đã được tạo
 
-    private String loaiEmail;
     private String emailNhan;
-    private String tieuDe;
     private LocalDateTime thoiGianGui;
-    private boolean thanhCong;
-    private boolean daMo;
-    private boolean daClick;
+
+    private boolean thanhCong; // Giao dịch gửi thành công?
+    private boolean daMo; // Đã mở email (thông qua tracking pixel)
+
     @Lob
-    private String loi;
+    private String loi; // Chi tiết lỗi nếu gửi thất bại
 }

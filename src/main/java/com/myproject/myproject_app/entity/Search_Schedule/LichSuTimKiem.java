@@ -17,12 +17,10 @@ public class LichSuTimKiem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idLichSu;
 
-    // FK: id_nguoi_dung
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
 
-    // FK: id_nguon
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_nguon")
     private NguonDuLieu nguon;

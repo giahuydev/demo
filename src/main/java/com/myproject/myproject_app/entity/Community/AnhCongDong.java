@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "anh_cong_dong")
 @Data
@@ -15,28 +18,41 @@ public class AnhCongDong {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idAnh;
 
-    // FK: id_nguoi_dung
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_nguoi_dung")
+    @JoinColumn(name = "id_nguoi_dung", nullable = false)
     private NguoiDung nguoiDung;
 
     private String urlAnh;
     private String urlThumbnail;
+
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String moTa;
-    private String tinhTrangTroi;
-    private Float viDo;
-    private Float kinhDo;
-    private String diaDiem;
-    private Float nhietDo;
-    private Integer doAm;
+
+    // --- Dữ liệu Thời tiết (FE đã xử lý từ raw data -> String định tính) ---
+    private String tinhTrangThoiTiet; // VD: "SUNNY", "RAINY", "STORM"
+    private String camGiac;           // VD: "HOT", "COLD", "COMFORTABLE"
+
+
     private Float luongMua;
-    private LocalDateTime thoiGianChup;
-    private LocalDateTime ngayDang;
-    private String trangThaiKiemDuyet;
-    private Integer luotThich;
-    private Integer luotBinhLuan;
-    private boolean xacNhanBanQuyen;
-    @Lob
-    private String lyDoTuChoi;
+    private String diaDiem;
+    private LocalDateTime ngayDang = LocalDateTime.now();
+
+    // --- Quản lý trạng thái ---
+    private String trangThaiKiemDuyet = "PENDING";
+
+    // --- Thống kê ---
+    private Integer luotThich = 0;
+    private Integer luotBinhLuan = 0;
+    private Integer soLuotBaoCao = 0;
+
+    // --- Relationships ---
+    @OneToMany(mappedBy = "anhCongDong", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BinhLuan> danhSachBinhLuan = new ArrayList<>();
+
+    @OneToMany(mappedBy = "anhCongDong", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikeAnh> danhSachLuotThich = new ArrayList<>();
+
+    @OneToMany(mappedBy = "anhCongDong", cascade = CascadeType.ALL)
+    private List<BaoCao> danhSachBaoCao = new ArrayList<>();
 }

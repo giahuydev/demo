@@ -1,31 +1,42 @@
 package com.myproject.myproject_app.entity.MultiSourceData;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "nguon_du_lieu", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"ten_nguon"})
-})
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class NguonDuLieu {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idNguon;
+    @Column(unique = true, nullable = false)
+    private String tenChucNang;
 
-    private String tenNguon; // UK
-    private String quocGia;
-    private String moTa;
+    @Column(nullable = false)
+    private String baseDomain;
+    @Lob
+    private String dailyParams;
+    @Lob
+    private String hourlyParams;
+    @Lob
+    private String currentParams;
+    @Lob
+    private String minutely15Params;
 
-    @Column(columnDefinition = "TEXT")
-    private String urlApi;
-    private Float doChinhXacTrungBinh;
-    private Integer tongLuotDanhGia;
-    private boolean kichHoat;
-    private Integer mucDoUuTien;
-    private LocalDateTime ngayThem;
+    @OneToMany(mappedBy = "nguonDuLieu", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<MoHinhDuBao> danhSachModel = new ArrayList<>();
+
+    public void addModel(MoHinhDuBao model) {
+        danhSachModel.add(model);
+        model.setNguonDuLieu(this);
+    }
 }

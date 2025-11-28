@@ -12,7 +12,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface DiaDiemYeuThichMapper{
 
-    @Mapping(source = "nguon.tenNguon", target = "tenNguon")
+    @Mapping(source = "nguon.tenChucNang", target = "tenNguon")
     DiaDiemYeuThichResponse toResponse(DiaDiemYeuThich entity);
 
     @Mapping(target = "nguon", ignore = true)

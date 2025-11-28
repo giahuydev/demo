@@ -3,34 +3,45 @@ package com.myproject.myproject_app.entity.Alert_Feedback;
 import com.myproject.myproject_app.entity.UserManagement.NguoiDung;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+// Enum cho trạng thái gửi của thông báo
+enum TrangThaiGuiEnum {
+    CHUA_GUI, DANG_CHO, THANH_CONG, THAT_BAI
+}
 
 @Entity
 @Table(name = "thong_bao")
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"nguoiDung"})
 public class ThongBao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idThongBao;
 
-    // FK: id_nguoi_dung
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
 
-    // FK: id_canh_bao
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_canh_bao")
-    private CanhBaoThoiTiet canhBao;
+    // Các trường cho liên kết Đa hình (Nguồn gốc tạo thông báo)
+    private String nguonPhatSinh;   // Tên Entity (Ví dụ: "CaiDatThongBao")
+    private Integer idEntityNguon;  // ID của Entity đó
 
-    private String loaiThongBao;
+    // Nội dung được tạo bởi AI hoặc Template
     private String tieuDe;
     @Lob
     private String noiDung;
-    private boolean daDoc;
+
+    @Enumerated(EnumType.STRING)
+    private TrangThaiGuiEnum trangThaiGui;
+
     private LocalDateTime thoiGianTao;
-    private LocalDateTime thoiGianDoc;
+    private LocalDateTime thoiGianCapNhat;
+
+    @OneToMany(mappedBy = "thongBao", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.Set<LichSuGuiEmail> lichSuGuiEmails;
 }

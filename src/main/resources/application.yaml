@@ -19,5 +19,14 @@ spring:
       host: localhost
       port: 6380
       timeout: 5000ms
-trackasia:
-  key: ae3e5bdef671763880184dcce3001e385d
+    ai:
+      openai:
+        api-key: ${GEMINI_KEY}
+        chat:
+          base-url: https://generativelanguage.googleapis.com
+          completions-path: /v1beta/openai/chat/completions
+          options:
+            model: gemini-2.0-flash
+track-asia:
+  api-key: ${TRACK_ASIA_KEY}
+  base-url: "https://maps.track-asia.com/route/v2/directions/json"

@@ -2,7 +2,6 @@ package com.myproject.myproject_app.controller;
 
 import com.myproject.myproject_app.dto.request.ApiResponse;
 import com.myproject.myproject_app.dto.request.NguonDuLieuRequest;
-import com.myproject.myproject_app.dto.request.NguonDuLieuUpdateRequest;
 import com.myproject.myproject_app.dto.response.NguonDuLieuResponse;
 import com.myproject.myproject_app.service.NguonDuLieuService;
 import jakarta.validation.Valid;
@@ -12,52 +11,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/SoureWeather")
+@RequestMapping("/nguon-du-lieu")
 @RequiredArgsConstructor
 public class NguonDuLieuController {
 
     private final NguonDuLieuService nguonDuLieuService;
 
-    // 1. Tạo mới nguồn dữ liệu
+    // 1. Tạo mới
     @PostMapping
-    ApiResponse<NguonDuLieuResponse> createNguonDuLieu(@RequestBody @Valid NguonDuLieuRequest request) {
+    public ApiResponse<NguonDuLieuResponse> create(@RequestBody @Valid NguonDuLieuRequest request) {
         return ApiResponse.<NguonDuLieuResponse>builder()
-                .result(nguonDuLieuService.createNguonDuLieu(request))
+                .result(nguonDuLieuService.create(request))
                 .build();
     }
 
-    // 2. Lấy danh sách tất cả nguồn
-    @GetMapping
-    ApiResponse<List<NguonDuLieuResponse>> getAllNguonDuLieu() {
-        return ApiResponse.<List<NguonDuLieuResponse>>builder()
-                .result(nguonDuLieuService.getAllNguonDuLieu())
-                .build();
-    }
-
-    // 3. Lấy chi tiết theo tên nguồn (Thay vì ID, logic service của bạn đang dùng Name)
-    @GetMapping("/{tenNguon}")
-    ApiResponse<NguonDuLieuResponse> getNguonDuLieuByName(@PathVariable("tenNguon") String name) {
+    // 2. Cập nhật (theo ID)
+    @PutMapping("/{id}")
+    public ApiResponse<NguonDuLieuResponse> update(@PathVariable Integer id, @RequestBody @Valid NguonDuLieuRequest request) {
         return ApiResponse.<NguonDuLieuResponse>builder()
-                .result(nguonDuLieuService.getNguonDuLieuByName(name))
+                .result(nguonDuLieuService.update(id, request))
                 .build();
     }
 
-    // 4. Cập nhật nguồn dữ liệu
-    @PutMapping("/{tenNguon}")
-    ApiResponse<NguonDuLieuResponse> updateNguonDuLieu(
-            @PathVariable("tenNguon") String name,
-            @RequestBody NguonDuLieuUpdateRequest request) {
-        return ApiResponse.<NguonDuLieuResponse>builder()
-                .result(nguonDuLieuService.updateNguonDuLieu(name, request))
-                .build();
-    }
-
-    // 5. Xóa nguồn dữ liệu
-    @DeleteMapping("/{tenNguon}")
-    ApiResponse<String> deleteNguonDuLieu(@PathVariable("tenNguon") String name) {
-        nguonDuLieuService.deleteNguonDuLieu(name);
+    // 3. Xóa (theo ID)
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> delete(@PathVariable Integer id) {
+        nguonDuLieuService.delete(id);
         return ApiResponse.<String>builder()
-                .result("Nguồn dữ liệu đã được xóa thành công")
+                .result("Đã xóa nguồn dữ liệu thành công")
+                .build();
+    }
+
+    // 4. Lấy chi tiết (theo ID)
+    @GetMapping("/{id}")
+    public ApiResponse<NguonDuLieuResponse> getById(@PathVariable Integer id) {
+        return ApiResponse.<NguonDuLieuResponse>builder()
+                .result(nguonDuLieuService.getById(id))
+                .build();
+    }
+
+    // 5. Lấy danh sách tất cả
+    @GetMapping
+    public ApiResponse<List<NguonDuLieuResponse>> getAll() {
+        return ApiResponse.<List<NguonDuLieuResponse>>builder()
+                .result(nguonDuLieuService.getAll())
                 .build();
     }
 }
