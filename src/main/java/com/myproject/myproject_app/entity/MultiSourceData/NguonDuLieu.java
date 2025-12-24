@@ -23,12 +23,19 @@ public class NguonDuLieu {
     @Column(nullable = false)
     private String baseDomain;
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String dailyParams;
+
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String hourlyParams;
+
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String currentParams;
+
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String minutely15Params;
 
     @OneToMany(mappedBy = "nguonDuLieu", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

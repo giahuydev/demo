@@ -1,47 +1,53 @@
 package com.myproject.myproject_app.entity.Alert_Feedback;
 
+
+import com.myproject.myproject_app.entity.Search_Schedule.CauHinhNhacNho;
 import com.myproject.myproject_app.entity.UserManagement.NguoiDung;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-
-// Enum cho trạng thái gửi của thông báo
-enum TrangThaiGuiEnum {
-    CHUA_GUI, DANG_CHO, THANH_CONG, THAT_BAI
-}
 
 @Entity
 @Table(name = "thong_bao")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"nguoiDung"})
+@EqualsAndHashCode(exclude = {"nguoiDung", "cauHinhNhacNho", "caiDatThongBao"})
 public class ThongBao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idThongBao;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_nguoi_dung")
+    @JoinColumn(name = "id_nguoi_dung", nullable = false)
     private NguoiDung nguoiDung;
 
-    // Các trường cho liên kết Đa hình (Nguồn gốc tạo thông báo)
-    private String nguonPhatSinh;   // Tên Entity (Ví dụ: "CaiDatThongBao")
-    private Integer idEntityNguon;  // ID của Entity đó
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cau_hinh_nhac_nho", nullable = true)
+    private CauHinhNhacNho cauHinhNhacNho;
 
-    // Nội dung được tạo bởi AI hoặc Template
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cai_dat_thong_bao", nullable = true)
+    private CaiDatThongBao caiDatThongBao;
+
     private String tieuDe;
+
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String noiDung;
 
     @Enumerated(EnumType.STRING)
     private TrangThaiGuiEnum trangThaiGui;
 
-    private LocalDateTime thoiGianTao;
-    private LocalDateTime thoiGianCapNhat;
+    private LocalDateTime thoiGianGui;
 
-    @OneToMany(mappedBy = "thongBao", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.Set<LichSuGuiEmail> lichSuGuiEmails;
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String loi;
+
+    private boolean daMo;
+
+    private LocalDateTime thoiGianTao;
 }

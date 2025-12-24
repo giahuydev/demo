@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface DiaDiemYeuThichRepository extends JpaRepository<DiaDiemYeuThich, Integer> {
 
-    List<DiaDiemYeuThich> findAllById(String userId);
+    List<DiaDiemYeuThich> findByNguoiDung_IdNguoiDung(String idNguoiDung);
 }

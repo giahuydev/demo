@@ -3,13 +3,12 @@ package com.myproject.myproject_app.service;
 import com.myproject.myproject_app.dto.request.NguoiDungCreationRequest;
 import com.myproject.myproject_app.dto.request.NguoiDungUpdateRequest;
 import com.myproject.myproject_app.dto.response.NguoiDungCreationResponse;
-import com.myproject.myproject_app.entity.MultiSourceData.NguonDuLieu;
 import com.myproject.myproject_app.entity.UserManagement.NguoiDung;
 import com.myproject.myproject_app.exception.AppException;
 import com.myproject.myproject_app.exception.ErrorCode;
 import com.myproject.myproject_app.mapper.NguoiDungMapper;
-import com.myproject.myproject_app.repository.NguonDuLieuRepository;
 import com.myproject.myproject_app.repository.NguoiDungRepository;
+import com.myproject.myproject_app.repository.NguonDuLieuRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -43,23 +42,19 @@ public class NguoiDungService {
         nguoiDung.setNguoiDungTinCay(true);
         nguoiDung.setVaiTro("USER");
 
-        NguonDuLieu nguonMacDinh = nguonDuLieuRepository.findBytenNguon("OpenMeteo")
-                .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
-        nguoiDung.setNguonMacDinh(nguonMacDinh);
-
         return nguoiDungRepository.save(nguoiDung);
     }
 
 
-    @Transactional
-    public void updateDefaultSource(String userId, String tenNguonMoi) {
-        NguoiDung user = nguoiDungRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        NguonDuLieu newSource = nguonDuLieuRepository.findBytenNguon(tenNguonMoi)
-                .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
-        user.setNguonMacDinh(newSource);
-        nguoiDungRepository.save(user);
-    }
+//    @Transactional
+//    public void updateDefaultSource(String userId, String tenNguonMoi) {
+//        NguoiDung user = nguoiDungRepository.findById(userId)
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+//        NguonDuLieu newSource = nguonDuLieuRepository.findByModelName(tenNguonMoi)
+//                .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
+//        user.setNguonMacDinh(newSource);
+//        nguoiDungRepository.save(user);
+//    }
 
     public List<NguoiDungCreationResponse> getDSNguoiDung() {
         return nguoiDungRepository.findAll().stream()
@@ -83,11 +78,11 @@ public class NguoiDungService {
 
         nguoiDungMapper.updateUser(nguoiDung, request);
 
-        if (request.getTenNguonMacDinh() != null) {
-            NguonDuLieu nguonMoi = nguonDuLieuRepository.findBytenNguon(request.getTenNguonMacDinh())
-                    .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
-            nguoiDung.setNguonMacDinh(nguonMoi);
-        }
+//        if (request.getTenNguonMacDinh() != null) {
+//            NguonDuLieu nguonMoi = nguonDuLieuRepository.findByMaModelApi(request.getTenNguonMacDinh())
+//                    .orElseThrow(() -> new AppException(ErrorCode.SOURCE_NOT_FOUND));
+//            nguoiDung.setNguonMacDinh(nguonMoi);
+//        }
 
         return nguoiDungMapper.toNguoiDungResponse(nguoiDungRepository.save(nguoiDung));
     }

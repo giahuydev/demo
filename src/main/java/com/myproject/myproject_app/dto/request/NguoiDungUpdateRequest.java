@@ -14,5 +14,4 @@ public class NguoiDungUpdateRequest {
     String hoTen;
     String avatarUrl;
     String cheDoGiaoDien;
-    String tenNguonMacDinh;
 }

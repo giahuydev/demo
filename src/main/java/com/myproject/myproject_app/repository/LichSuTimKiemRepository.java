@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface LichSuTimKiemRepository extends JpaRepository<LichSuTimKiem, Integer> {
 
-    List<LichSuTimKiem> findAllByNguoiDung_IdOrderByThoiGianTimKiemDesc(Integer userId);
+    List<LichSuTimKiem> findAllByNguoiDung_IdNguoiDungOrderByThoiGianTimDesc(String userId);
 
-    void deleteAllByNguoiDung_Id(Integer userId);
+    void deleteAllByNguoiDung_IdNguoiDung(String userId);
 }

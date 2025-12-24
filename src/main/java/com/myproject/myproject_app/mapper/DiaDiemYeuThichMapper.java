@@ -10,18 +10,20 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface DiaDiemYeuThichMapper{
+public interface DiaDiemYeuThichMapper {
 
-    @Mapping(source = "nguon.tenChucNang", target = "tenNguon")
+    // ✅ FIX: Map từ model.tenModelHienThi (thay vì nguon.tenChucNang)
+    @Mapping(source = "model.tenModelHienThi", target = "tenNguon")
+    @Mapping(source = "model.id", target = "idModel")
     DiaDiemYeuThichResponse toResponse(DiaDiemYeuThich entity);
 
-    @Mapping(target = "nguon", ignore = true)
+    @Mapping(target = "model", ignore = true)
     @Mapping(target = "nguoiDung", ignore = true)
     @Mapping(target = "idDiaDiem", ignore = true)
     @Mapping(target = "ngayThem", ignore = true)
     DiaDiemYeuThich toEntity(DiaDiemYeuThichRequest request);
 
-    @Mapping(target = "nguon", ignore = true)
+    @Mapping(target = "model", ignore = true)
     @Mapping(target = "nguoiDung", ignore = true)
     @Mapping(target = "idDiaDiem", ignore = true)
     @Mapping(target = "ngayThem", ignore = true)

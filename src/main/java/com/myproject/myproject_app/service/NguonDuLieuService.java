@@ -27,9 +27,10 @@ public class NguonDuLieuService {
             throw new AppException(ErrorCode.SOURCE_EXISTED);
         }
 
-        // Mapper tự xử lý việc map dữ liệu và gán quan hệ cha-con
         NguonDuLieu entity = nguonDuLieuMapper.toEntity(request);
-
+        if (entity.getDanhSachModel() != null) {
+            entity.getDanhSachModel().forEach(model -> model.setNguonDuLieu(entity));
+        }
         NguonDuLieu savedEntity = nguonDuLieuRepository.save(entity);
         return nguonDuLieuMapper.toResponse(savedEntity);
     }

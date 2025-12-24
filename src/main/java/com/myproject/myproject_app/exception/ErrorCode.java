@@ -28,8 +28,11 @@ public enum ErrorCode {
 
     // --- 3xxx: Lỗi Địa Điểm Yêu Thích (Favorite) ---
     FAVORITE_NOT_FOUND(3001, "Địa điểm yêu thích không tìm thấy", HttpStatus.NOT_FOUND),
+    LICH_HEN_NOT_FOUND(3001, "Không tìm thấy lịch hẹn", HttpStatus.NOT_FOUND),
     FAVORITE_LIMIT_EXCEEDED(3002, "Danh sách yêu thích đã đầy", HttpStatus.BAD_REQUEST),
     FAVORITE_ALREADY_EXISTS(3003, "Địa điểm này đã có trong danh sách yêu thích", HttpStatus.CONFLICT),
+    CRON_INVALID(3003, "Định dạng thời gian (Cron) không hợp lệ", HttpStatus.BAD_REQUEST),
+    REMINDER_NOT_FOUND(3004, "Không tìm thấy cấu hình nhắc nhở", HttpStatus.NOT_FOUND),
 
     // --- 4xxx: Lỗi Dữ Liệu Đầu Vào (Request) ---
     INVALID_REQUEST(4000, "Dữ liệu đầu vào không hợp lệ", HttpStatus.BAD_REQUEST),
@@ -45,6 +48,10 @@ public enum ErrorCode {
     ROUTING_SERVICE_ERROR(6002, "Lỗi kết nối đến dịch vụ bản đồ", HttpStatus.BAD_GATEWAY),
     AI_ANALYSIS_FAILED(6003, "Không thể phân tích rủi ro lúc này (Lỗi AI)", HttpStatus.INTERNAL_SERVER_ERROR),
     TRIP_NOT_FOUND(6004, "Hành trình không tồn tại hoặc link chia sẻ không đúng", HttpStatus.NOT_FOUND),
+
+    POST_NOT_FOUND(1005, "Bài viết không tồn tại", HttpStatus.NOT_FOUND),
+    ALREADY_REPORTED(1006, "Bạn đã báo cáo bài viết này rồi", HttpStatus.CONFLICT),
+
     ;
 
     private final int code;

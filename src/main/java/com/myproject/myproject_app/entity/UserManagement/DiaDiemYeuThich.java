@@ -1,6 +1,6 @@
 package com.myproject.myproject_app.entity.UserManagement;
 
-import com.myproject.myproject_app.entity.MultiSourceData.NguonDuLieu;
+import com.myproject.myproject_app.entity.MultiSourceData.MoHinhDuBao;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,17 +21,15 @@ public class DiaDiemYeuThich {
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
 
-    // FK: id_nguon
+    // ✅ FIX: Đổi từ NguonDuLieu -> MoHinhDuBao
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_nguon")
-    private NguonDuLieu nguon;
+    @JoinColumn(name = "id_model")
+    private MoHinhDuBao model;
 
     private String tenDiaDiem;
     private String bietDanh;
     private Float viDo;
     private Float kinhDo;
-    // chỉnh sửa sau (xóa)
     private Integer thuTuSapXep;
     private LocalDateTime ngayThem;
 }
-

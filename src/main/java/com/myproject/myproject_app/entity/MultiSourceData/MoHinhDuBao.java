@@ -1,5 +1,6 @@
 package com.myproject.myproject_app.entity.MultiSourceData;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,5 +28,6 @@ public class MoHinhDuBao {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idNguon", nullable = false)
+    @JsonIgnore
     private NguonDuLieu nguonDuLieu;
 }

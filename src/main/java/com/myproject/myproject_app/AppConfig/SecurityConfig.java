@@ -19,42 +19,39 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Kích hoạt cấu hình CORS (được định nghĩa ở bean dưới)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // 2. Tắt CSRF (Do dùng API stateless)
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // 3. Phân quyền truy cập (Authorize Requests)
                 .authorizeHttpRequests(request -> request
-                        // Cho phép truy cập công khai vào endpoint weather (dựa trên URL bạn gửi)
-                        .requestMatchers("/weather/**", "/identity/weather/**").permitAll()
-                        // Cho phép các file static nếu cần (ảnh, css, js)
-                        .requestMatchers("/public/**").permitAll()
-                        // Tất cả các request còn lại bắt buộc phải có Token/Đăng nhập
+                        .requestMatchers(
+                                "/auth/**",                // <--- THÊM DÒNG NÀY (QUAN TRỌNG)
+                                "/User/**",                // Đăng ký user mới
+                                "/api/v1/lich-hen/**",
+                                "/notification-settings/**",
+                                "/nguon-du-lieu/**",
+                                "/favorites/**",
+                                "/community/**",
+                                "/trips/**",
+                                "/notifications/**",
+                                "/reminders/**",
+                                "/search-history/**",
+                                "/weather/**",
+                                "/api/tracking/**",
+                                "/identity/**",
+                                "/public/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 );
 
         return http.build();
     }
 
-    // Bean cấu hình CORS chi tiết
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // CHỈ ĐỊNH RÕ: Cho phép Frontend ở port 5173
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-
-        // Cho phép các method HTTP
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Frontend Port
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // Cho phép các headers (Authorization, Content-Type...)
         configuration.setAllowedHeaders(List.of("*"));
-
-        // Cho phép gửi credentials (cookies, authorization headers) nếu cần
         configuration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

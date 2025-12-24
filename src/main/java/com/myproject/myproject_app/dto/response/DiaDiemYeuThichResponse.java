@@ -12,6 +12,10 @@ public class DiaDiemYeuThichResponse {
     private String bietDanh;
     private Float viDo;
     private Float kinhDo;
-    private String tenNguon;
+
+    // ✅ THAY ĐỔI: Trả về tên model thay vì tên nguồn
+    private String tenNguon;  // Sẽ chứa model.tenModelHienThi (VD: "ICON Seamless")
+    private Integer idModel;  // ✅ MỚI: Trả về ID của model
+
     private LocalDateTime ngayThem;
 }

@@ -3,15 +3,15 @@ package com.myproject.myproject_app.entity.Search_Schedule;
 import com.myproject.myproject_app.entity.MultiSourceData.NguonDuLieu;
 import com.myproject.myproject_app.entity.UserManagement.NguoiDung;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "lich_hen")
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"nguoiDung", "nguon", "cauHinhNhacNhos"})
 public class LichHen {
@@ -28,10 +28,13 @@ public class LichHen {
     private NguonDuLieu nguon;
 
     private String tenSuKien;
-    private LocalDateTime ngayGio;
+    @Column(nullable = false)
+    private LocalDateTime thoiGianBatDau;
+
+    @Column(nullable = false)
+    private LocalDateTime thoiGianKetThuc;
     private String diaDiem;
 
-    // Sử dụng Double cho độ chính xác cao hơn, mặc dù Float cũng được
     private Double viDo;
     private Double kinhDo;
 
@@ -41,7 +44,6 @@ public class LichHen {
     private LocalDateTime ngayTao;
     private LocalDateTime ngayCapNhat;
 
-    // Quan hệ Một-Nhiều với các cấu hình nhắc nhở
     @OneToMany(mappedBy = "lichHen", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.Set<CauHinhNhacNho> cauHinhNhacNho;
 }

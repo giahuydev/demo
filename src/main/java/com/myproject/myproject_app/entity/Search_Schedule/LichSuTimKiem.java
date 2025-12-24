@@ -1,6 +1,6 @@
 package com.myproject.myproject_app.entity.Search_Schedule;
 
-import com.myproject.myproject_app.entity.MultiSourceData.NguonDuLieu;
+import com.myproject.myproject_app.entity.MultiSourceData.MoHinhDuBao;
 import com.myproject.myproject_app.entity.UserManagement.NguoiDung;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -21,9 +21,10 @@ public class LichSuTimKiem {
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
 
+    // ✅ FIX: Đổi từ NguonDuLieu -> MoHinhDuBao
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_nguon")
-    private NguonDuLieu nguon;
+    @JoinColumn(name = "id_model")
+    private MoHinhDuBao model;
 
     private String tenDiaDiem;
     private Float viDo;

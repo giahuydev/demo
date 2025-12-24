@@ -1,6 +1,5 @@
 package com.myproject.myproject_app.entity.UserManagement;
 
-import com.myproject.myproject_app.entity.MultiSourceData.NguonDuLieu;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +33,4 @@ public class NguoiDung {
     private String cheDoGiaoDien;
     private boolean nguoiDungTinCay;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_nguon_mac_dinh")
-    private NguonDuLieu nguonMacDinh;
 }
